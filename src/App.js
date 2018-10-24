@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Container, Jumbotron } from 'reactstrap';
 import axios from 'axios';
+
+// Import Components
+import Home from './components/Home';
+import Create from './components/Create';
 
 class App extends Component {
   state = {
     memeData: [],
-    selectedMeme:''
+    selectedMeme:'',
+    redirect: false
   }
 
   componentDidMount = () => {
@@ -26,34 +32,46 @@ class App extends Component {
     const selectedMeme = e.target.attributes.getNamedItem("data-value").value;
 
     this.setState({
-      selectedMeme
+      selectedMeme,
+      redirect: '/create'
+    }, () => {
+      Router.push('/create')
     })
+
   }
 
   render() {
-
+    //console.log(this.state.selectedMeme)
     return (
-      <div className="App">
-      <Container>
-        <Jumbotron>
-          <h1>Meme Generator</h1>
-        </Jumbotron>
-        
-        <div id="images">
-        {this.state.memeData.map((images) => {
-          return (
-            <img 
-              src={images.url} 
-              alt={images.name}
-              data-value={images.url}
-              onClick={this.handleClick}
+      <Router>
+        <div className="App">
+          <Container>
+            <Jumbotron>
+              <h1>Meme Generator</h1>
+            </Jumbotron>
+            {/* {this.state.redirect ? <Redirect to={this.state.redirect}/> : null} */}
+            <Route
+              exact path='/'
+              render={(props) => 
+                <Home 
+                  memeData={this.state.memeData}
+                  handleClick={this.handleClick}
+                  {...props}
+                />
+              }
             />
-          )
-        })}
+            <Route 
+              exact path='/create/'
+              render={(props) =>
+                <Create 
+                  meme={this.state.selectedMeme}
+                  {...props}
+                />
+              }
+            />
+          </Container>
         </div>
-      </Container>
-
-      </div>
+      </Router>
     );
   }
 }
