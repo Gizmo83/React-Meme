@@ -1,54 +1,40 @@
-import React, { Component } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { Container, Jumbotron } from 'reactstrap';
-import axios from 'axios';
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Container, Jumbotron } from "reactstrap";
+import axios from "axios";
 
 // Import Components
-import Home from './components/Home';
-import Create from './components/Create';
-import Meme from './components/Meme';
+import Home from "./components/Home";
+import Create from "./components/Create";
+import Meme from "./components/Meme";
 
 class App extends Component {
   state = {
     memeData: [],
-    selectedMeme: ''
-  }
+    selectedMeme: ""
+  };
 
   componentDidMount = () => {
     this.getImages();
-  }
+  };
 
   // Get Images from API
+  // https://api.imgflip.com
   getImages = () => {
-    axios.get("https://api.imgflip.com/get_memes")
-    .then((response) => {
-      console.log(response.data.data.memes)
+    axios.get("https://api.imgflip.com/get_memes").then(response => {
+      console.log(response.data.data.memes);
       this.setState({
         memeData: response.data.data.memes
-      })
-    })
-  }
-  
-  handleClick = (selectedMeme) => {
+      });
+    });
+  };
+
+  handleClick = selectedMeme => {
     //console.log(selectedMeme)
     this.setState({
       selectedMeme
-    })
-  }
-
-  handleSubmit = (memeText) => {
-
-    const formData = new FormData()
-    formData.append("text0", memeText.topText)
-    formData.append("text1", memeText.bottomText)
-    formData.append("template_id", this.state.selectedMeme.id)
-    formData.append("username", "imgflip_hubot")
-    formData.append("password", "imgflip_hubot")
-
-    axios.post("https://cors-anywhere.herokuapp.com/https://api.imgflip.com/caption_image", formData ).then((res)=> {
-      console.log(res)
-    })
-  }
+    });
+  };
 
   render() {
     //console.log(this.state.selectedMeme)
@@ -60,33 +46,28 @@ class App extends Component {
               <h1>Meme Generator</h1>
             </Jumbotron>
             <Route
-              exact path='/'
-              render={(props) => 
-                <Home 
+              exact
+              path="/"
+              render={props => (
+                <Home
                   memeData={this.state.memeData}
                   handleClick={this.handleClick}
                   {...props}
                 />
-              }
+              )}
             />
-            <Route 
-              exact path='/create'
-              render={(props) =>
-                <Create 
+            <Route
+              exact
+              path="/create"
+              render={props => (
+                <Create
                   memeData={this.state.selectedMeme}
                   handleSubmit={this.handleSubmit}
                   {...props}
                 />
-              }
+              )}
             />
-            <Route 
-              exact path='/meme'
-              render={(props) => 
-                <Meme 
-                  {...props}
-                />
-              }
-            />
+            <Route exact path="/meme" render={props => <Meme {...props} />} />
           </Container>
         </div>
       </Router>
