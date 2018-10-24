@@ -6,17 +6,18 @@ import axios from 'axios';
 // Import Components
 import Home from './components/Home';
 import Create from './components/Create';
+import Meme from './components/Meme';
 
 class App extends Component {
   state = {
     memeData: [],
-    selectedMeme:'',
-    redirect: false
+    selectedMeme: ''
   }
 
   componentDidMount = () => {
     this.getImages();
   }
+
   // Get Images from API
   getImages = () => {
     axios.get("https://api.imgflip.com/get_memes")
@@ -28,16 +29,25 @@ class App extends Component {
     })
   }
   
-  handleClick = (e) => {
-    const selectedMeme = e.target.attributes.getNamedItem("data-value").value;
-
+  handleClick = (selectedMeme) => {
+    //console.log(selectedMeme)
     this.setState({
-      selectedMeme,
-      redirect: '/create'
-    }, () => {
-      Router.push('/create')
+      selectedMeme
     })
+  }
 
+  handleSubmit = (memeText) => {
+
+    const formData = new FormData()
+    formData.append("text0", memeText.topText)
+    formData.append("text1", memeText.bottomText)
+    formData.append("template_id", this.state.selectedMeme.id)
+    formData.append("username", "imgflip_hubot")
+    formData.append("password", "imgflip_hubot")
+
+    axios.post("https://cors-anywhere.herokuapp.com/https://api.imgflip.com/caption_image", formData ).then((res)=> {
+      console.log(res)
+    })
   }
 
   render() {
@@ -49,7 +59,6 @@ class App extends Component {
             <Jumbotron>
               <h1>Meme Generator</h1>
             </Jumbotron>
-            {/* {this.state.redirect ? <Redirect to={this.state.redirect}/> : null} */}
             <Route
               exact path='/'
               render={(props) => 
@@ -61,10 +70,19 @@ class App extends Component {
               }
             />
             <Route 
-              exact path='/create/'
+              exact path='/create'
               render={(props) =>
                 <Create 
-                  meme={this.state.selectedMeme}
+                  memeData={this.state.selectedMeme}
+                  handleSubmit={this.handleSubmit}
+                  {...props}
+                />
+              }
+            />
+            <Route 
+              exact path='/meme'
+              render={(props) => 
+                <Meme 
                   {...props}
                 />
               }

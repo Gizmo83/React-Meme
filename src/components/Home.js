@@ -1,17 +1,28 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom'
 
 const Home = (props) => {
-  console.log(props)
+
+  const handleClick = (e) => {
+
+    const selectedMeme = {
+      image: e.target.attributes.getNamedItem("src").value,
+      id: e.target.attributes.getNamedItem("data-id").value,
+    }
+
+    props.handleClick(selectedMeme)
+    props.history.push('/create')
+  }
+
   return (
     <div id="images">
     {props.memeData.map((images) => {
       return (
         <img 
+          key={images.id}
           src={images.url} 
           alt={images.name}
-          data-value={images.url}
-          onClick={()=>{props.history.push(`/create/?img=${images.url}`)}}
+          data-id={images.id}
+          onClick={handleClick}
         />
       )
     })}
